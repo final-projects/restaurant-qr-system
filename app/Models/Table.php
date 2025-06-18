@@ -9,7 +9,7 @@ class Table extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'qr_token'];
+    protected $fillable = ['name', 'qr_token', 'status'];
 
     public function orders()
     {
