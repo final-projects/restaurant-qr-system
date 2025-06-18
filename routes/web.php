@@ -1,0 +1,33 @@
+<?php
+
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\AdminController;
+
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/order', [OrderController::class, 'showMenu'])->name('order.menu');
+Route::post('/order', [OrderController::class, 'submitOrder'])->name('order.submit');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/admin/orders/{id}', [AdminController::class, 'view'])->name('admin.view');
+    Route::post('/admin/orders/{id}/status', [AdminController::class, 'updateStatus'])->name('admin.status');
+    Route::delete('/admin/orders/{id}', [AdminController::class, 'delete'])->name('admin.delete');
+});
+
+
+
+require __DIR__.'/auth.php';
