@@ -20,4 +20,9 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+    public function menus()
+{
+    return $this->belongsToMany(Menu::class)->withTimestamps();
+}
+
 }

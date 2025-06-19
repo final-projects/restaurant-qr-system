@@ -13,27 +13,35 @@ use App\Http\Controllers\Admin\SettingsController;
 |--------------------------------------------------------------------------
 | Admin Routes
 |--------------------------------------------------------------------------
-|
-| This file contains all the admin-related routes.
-| Routes are grouped with the "admin." name prefix and "/admin" URI prefix.
-|
+| All admin routes are prefixed with /admin and use "admin." name prefix.
+|--------------------------------------------------------------------------
 */
 
-// Public admin routes (no authentication required)
+// 🔓 Public admin routes (no login required)
 Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
 
-// Protected admin routes (requires admin authentication)
+// 🔐 Protected routes (requires admin middleware)
 Route::middleware('admin')->group(function () {
+
+    // 📊 Dashboard
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/tables', [TableController::class, 'index'])->name('tables.index');
-    Route::get('/menus', [MenuController::class, 'index'])->name('menus.index');
 
-    Route::resource('categories', CategoryController::class);
+    // 📦 Orders - full resource
+    Route::resource('orders', OrderController::class)->names('orders');
 
+    // 🍽️ Tables
+    Route::resource('tables', TableController::class)->names('tables');
+
+    // 📋 Menus
+    Route::resource('menus', MenuController::class)->names('menus');
+
+    // 🗂️ Categories
+    Route::resource('categories', CategoryController::class)->names('categories');
+
+    // ⚙️ Settings (only index for now)
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
 
-    // Add more protected admin routes below...
+    // 🚪 Logout
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 });
-
