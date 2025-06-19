@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Menu;
 use App\Models\Order;
 use App\Models\Table;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -15,8 +16,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with('table')->latest()->get();
-
+        $orders = Order::with(['table', 'menus', 'user'])->latest()->paginate(10);
         return view('admin.orders.index', compact('orders'));
     }
 
@@ -25,10 +25,10 @@ class OrderController extends Controller
      */
     public function create()
     {
-        $tables = Table::all(); // For table selection
-        $menus = Menu::with('category')->get(); // For menu item checkboxes
-
-        return view('admin.orders.create', compact('tables', 'menus'));
+        $tables = Table::all();
+        $menus = Menu::with('category')->get();
+        $users = User::all();
+        return view('admin.orders.create', compact('tables', 'menus', 'users'));
     }
 
     /**
@@ -38,22 +38,36 @@ class OrderController extends Controller
     {
         $request->validate([
             'table_id' => 'required|exists:tables,id',
-            'status' => 'required|in:pending,processing,completed,canceled',
+            'status' => 'required|in:new,preparing,completed',
+            'menus' => 'required|array',
         ]);
 
-        Order::create([
+        $filteredMenus = collect($request->menus)->filter(fn($qty) => intval($qty) > 0);
+
+        if ($filteredMenus->isEmpty()) {
+            return back()->withErrors(['menus' => 'Please add at least one item with quantity greater than 0.'])->withInput();
+        }
+
+        $order = Order::create([
             'table_id' => $request->table_id,
+            'user_id' => $request->user_id,
             'status' => $request->status,
         ]);
 
+        foreach ($filteredMenus as $menuId => $quantity) {
+            $order->menus()->attach($menuId, ['quantity' => intval($quantity)]);
+        }
+
         return redirect()->route('admin.orders.index')->with('success', 'Order created successfully.');
     }
+
 
     /**
      * Display the specified order.
      */
     public function show(Order $order)
     {
+        $order->load(['table', 'menus', 'user']);
         return view('admin.orders.show', compact('order'));
     }
 
@@ -63,8 +77,11 @@ class OrderController extends Controller
     public function edit(Order $order)
     {
         $tables = Table::all();
+        $menus  = Menu::with('category')->get();
+        $users  = User::all();
+        $order->load('menus');
 
-        return view('admin.orders.edit', compact('order', 'tables'));
+        return view('admin.orders.edit', compact('order', 'tables', 'menus', 'users'));
     }
 
     /**
@@ -74,16 +91,35 @@ class OrderController extends Controller
     {
         $request->validate([
             'table_id' => 'required|exists:tables,id',
-            'status' => 'required|in:pending,processing,completed,canceled',
+            'status'   => 'required|in:new,preparing,completed',
+            'menus'    => 'required|array',
         ]);
 
+        // Filter out menu items with quantity > 0
+        $filteredMenus = collect($request->menus)->filter(fn($qty) => intval($qty) > 0);
+
+        if ($filteredMenus->isEmpty()) {
+            return back()->withErrors(['menus' => 'Please add at least one item with quantity greater than 0.'])->withInput();
+        }
+
+        // Update main order data
         $order->update([
             'table_id' => $request->table_id,
-            'status' => $request->status,
+            'user_id'  => $request->user_id,
+            'status'   => $request->status,
         ]);
+
+        // Sync menu items with quantities
+        $syncData = [];
+        foreach ($filteredMenus as $menuId => $quantity) {
+            $syncData[$menuId] = ['quantity' => intval($quantity)];
+        }
+
+        $order->menus()->sync($syncData);
 
         return redirect()->route('admin.orders.index')->with('success', 'Order updated successfully.');
     }
+
 
     /**
      * Remove the specified order from storage.
@@ -91,7 +127,6 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         $order->delete();
-
         return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully.');
     }
 }

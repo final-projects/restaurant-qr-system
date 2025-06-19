@@ -29,7 +29,7 @@ Route::middleware('guest.admin')->group(function () {
 
 
 Route::get('/tables/{table}/qr', function (\App\Models\Table $table) {
-    
+
     $qr = QrCode::format('png')->size(200)->generate(url('/table/' . $table->qr_token));
     return Response::make($qr, 200, ['Content-Type' => 'image/png']);
 })->name('tables.qr');
@@ -42,7 +42,7 @@ Route::middleware('auth:admin')->group(function () {
 
     // 📦 Orders - full resource
     // Route::resource('orders', OrderController::class)->names('orders');
-    Route::resource('orderss', OrderController::class)->names('orders');
+    Route::resource('main/orders', OrderController::class)->names('orders');
 
     // 🍽️ Tables
     Route::resource('tables', TableController::class)->names('tables');

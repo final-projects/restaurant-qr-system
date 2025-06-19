@@ -35,8 +35,7 @@ class Menu extends Model
         return number_format($this->price, 2) . ' EGP';
     }
     public function orders()
-{
-    return $this->belongsToMany(Order::class)->withTimestamps();
-}
-
+    {
+        return $this->belongsToMany(Order::class)->withPivot('quantity')->withTimestamps();
+    }
 }

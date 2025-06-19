@@ -22,7 +22,7 @@ class Order extends Model
     }
     public function menus()
     {
-        return $this->belongsToMany(Menu::class)->withTimestamps();
+        return $this->belongsToMany(Menu::class)->withPivot('quantity')->withTimestamps();
     }
     public function user()
     {
