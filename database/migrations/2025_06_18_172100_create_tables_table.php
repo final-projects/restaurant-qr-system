@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('table_number');
             $table->string('qr_token')->unique();
+            $table->integer('seats')->default(2);
             $table->enum('status', ['available', 'occupied'])->default('available');
             $table->timestamps();
         });

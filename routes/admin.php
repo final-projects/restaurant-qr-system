@@ -8,7 +8,8 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\TableController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SettingsController;
-
+use Illuminate\Support\Facades\Response;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 /*
 |--------------------------------------------------------------------------
 | Admin Routes
@@ -26,8 +27,15 @@ Route::middleware('guest.admin')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
 });
 
+
+Route::get('/tables/{table}/qr', function (\App\Models\Table $table) {
+    
+    $qr = QrCode::format('png')->size(200)->generate(url('/table/' . $table->qr_token));
+    return Response::make($qr, 200, ['Content-Type' => 'image/png']);
+})->name('tables.qr');
 // 🔐 Protected routes (requires admin middleware)
 Route::middleware('auth:admin')->group(function () {
+
 
     // 📊 Dashboard
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
