@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('table_id')->constrained()->onDelete('cascade');
-            $table->enum('status', ['new', 'preparing', 'completed'])->default('new');
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->enum('status', ['new', 'preparing', 'completed', 'cancelled'])->default('new');
             $table->timestamps();
         });
+
 
     }
 
