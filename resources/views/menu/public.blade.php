@@ -2,45 +2,60 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Restaurant Menu</title>
+    <title>Our Signature Menu</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{{ asset('logo.png') }}">
-
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 text-gray-800">
 
-    <header class="bg-white shadow sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-5 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-indigo-600">🍽️ Our Menu</h1>
-            <span class="text-sm text-gray-500">Fresh & Delicious</span>
+    <style>
+        .menu-card:hover .menu-img {
+            transform: scale(1.05);
+            transition: transform 0.4s ease;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-tr from-white via-gray-50 to-white text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white/70 backdrop-blur shadow sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+            <h1 class="text-3xl font-extrabold text-indigo-700 tracking-tight">🍽️ Our Signature Menu</h1>
+            <span class="text-sm text-gray-500">Crafted with Love ❤️</span>
         </div>
     </header>
 
-    <main class="py-10 px-4 max-w-7xl mx-auto">
-        <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <!-- Main -->
+    <main class="py-12 px-4 max-w-7xl mx-auto">
+        <div class="text-center mb-12">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Explore Our Best Dishes</h2>
+            <p class="text-sm text-gray-500 mt-2">Fresh • Organic • Delicious</p>
+        </div>
+
+        <div class="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             @foreach($menus as $menu)
-                <div class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden">
+                <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl overflow-hidden menu-card group transition-all duration-300">
                     @if($menu->image)
-                        <img src="{{ asset('storage/' . $menu->image) }}" alt="{{ $menu->name }}"
-                             class="h-40 w-full object-cover">
+                        <img src="{{ asset('storage/' . $menu->image) }}"
+                             alt="{{ $menu->name }}"
+                             class="h-44 w-full object-cover menu-img">
                     @else
-                        <div class="h-40 flex items-center justify-center bg-gray-100 text-gray-400">
-                            No Image
-                        </div>
+                        <div class="h-44 flex items-center justify-center bg-gray-100 text-gray-400">No Image</div>
                     @endif
 
-                    <div class="p-4 space-y-1">
-                        <h3 class="text-lg font-semibold truncate text-gray-800">{{ $menu->name }}</h3>
-                        <p class="text-sm text-gray-500">{{ $menu->category->name ?? 'Uncategorized' }}</p>
+                    <div class="p-5 space-y-2">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-lg font-bold text-gray-800 truncate">{{ $menu->name }}</h3>
+                            <span class="text-sm text-green-600 font-bold">{{ number_format($menu->price, 2) }} EGP</span>
+                        </div>
 
-                        <div class="flex justify-between items-center pt-2">
-                            <span class="text-green-600 font-bold">{{ number_format($menu->price, 2) }} EGP</span>
+                        <div class="flex justify-between items-center">
+                            <p class="text-xs text-gray-500">
+                                {{ $menu->category->name ?? 'Uncategorized' }}
+                            </p>
+
                             @if($menu->available)
-                                <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Available</span>
+                                <span class="text-xs font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">Available</span>
                             @else
-                                <span class="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">Unavailable</span>
+                                <span class="text-xs font-semibold text-red-700 bg-red-100 px-2 py-0.5 rounded-full">Unavailable</span>
                             @endif
                         </div>
                     </div>
@@ -49,11 +64,12 @@
         </div>
 
         @if($menus->isEmpty())
-            <div class="text-center text-gray-500 mt-10">No menu items available right now.</div>
+            <div class="text-center text-gray-500 mt-12">Currently no menu items available. Check back later!</div>
         @endif
     </main>
 
-    <footer class="text-center text-xs text-gray-400 py-6">
+    <!-- Footer -->
+    <footer class="text-center text-xs text-gray-400 py-6 mt-10">
         &copy; {{ date('Y') }} Your Restaurant. All rights reserved.
     </footer>
 
