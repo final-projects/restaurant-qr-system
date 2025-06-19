@@ -2,18 +2,27 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PublicMenuController;
+use App\Http\Controllers\User\DashboardController;
+use App\Http\Controllers\User\OrderController;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/order', [OrderController::class, 'showMenu'])->name('order.menu');
-Route::post('/order', [OrderController::class, 'submitOrder'])->name('order.submit');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('dashboard');
+
+    Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
+        Route::get('orders/create', [OrderController::class, 'create'])->name('orders.create');
+        Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
+        Route::get('menus', [\App\Http\Controllers\User\MenuController::class, 'index'])->name('menus.index');
+
+    });
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -29,5 +38,6 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
+Route::get('/menu', [PublicMenuController::class, 'index'])->name('menu.public.index');
 
 require __DIR__.'/auth.php';
