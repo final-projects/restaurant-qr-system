@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Menu;
 use App\Models\Order;
 use App\Models\Table;
 use Illuminate\Http\Request;
@@ -24,9 +25,10 @@ class OrderController extends Controller
      */
     public function create()
     {
-        $tables = Table::all();
+        $tables = Table::all(); // For table selection
+        $menus = Menu::with('category')->get(); // For menu item checkboxes
 
-        return view('admin.orders.create', compact('tables'));
+        return view('admin.orders.create', compact('tables', 'menus'));
     }
 
     /**

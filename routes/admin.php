@@ -18,17 +18,23 @@ use App\Http\Controllers\Admin\SettingsController;
 */
 
 // 🔓 Public admin routes (no login required)
-Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
+Route::middleware('guest.admin')->group(function () {
+    // 📜 Admin login form
+    Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
+
+    // 🔑 Admin login action
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
+});
 
 // 🔐 Protected routes (requires admin middleware)
-Route::middleware('admin')->group(function () {
+Route::middleware('auth:admin')->group(function () {
 
     // 📊 Dashboard
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // 📦 Orders - full resource
-    Route::resource('orders', OrderController::class)->names('orders');
+    // Route::resource('orders', OrderController::class)->names('orders');
+    Route::resource('orderss', OrderController::class)->names('orders');
 
     // 🍽️ Tables
     Route::resource('tables', TableController::class)->names('tables');

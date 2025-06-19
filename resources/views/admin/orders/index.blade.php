@@ -11,7 +11,6 @@
                 ➕ Create New Order
             </a>
         </div>
-        {{ dd(route('admin.orders.create')); }}
         @if($orders->count())
             <div class="overflow-x-auto">
                 <table class="min-w-full table-auto border border-gray-200">
