@@ -9,17 +9,19 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->decimal('price', 8, 2);
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
+            $table->text('description')->nullable(); // Optional description
+            $table->string('image')->nullable(); // Image path
+            $table->boolean('available')->default(true); // Availability status
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
