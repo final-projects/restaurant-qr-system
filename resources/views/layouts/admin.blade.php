@@ -24,7 +24,7 @@
                 <x-admin-nav-link route="admin.menus.index" icon="📋" label="Menus"/>
                 <x-admin-nav-link route="admin.categories.index" icon="🗂️" label="Categories"/>
                 <x-admin-nav-link route="admin.settings" icon="⚙️" label="Settings"/>
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('admin.logout') }}">
                     @csrf
                     <button class="w-full text-left text-red-600 px-4 py-2 hover:bg-red-100 rounded">
                         🚪 Logout

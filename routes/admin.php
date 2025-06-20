@@ -25,6 +25,8 @@ Route::middleware('guest.admin')->group(function () {
 
     // 🔑 Admin login action
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+
 });
 
 
