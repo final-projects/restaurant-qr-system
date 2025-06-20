@@ -31,12 +31,12 @@
 
             {{-- Action Buttons --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <a href="{{ route('user.orders.create') }}"
+                <a href="{{ route('show.public.menu') }}"
                    class="flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition duration-200 shadow">
                     ➕ Place New Order
                 </a>
 
-                <a href="{{ route('user.menus.index') }}"
+                <a href="{{ route('show.public.menu') }}"
                    class="flex items-center justify-center bg-white border hover:bg-gray-50 text-gray-700 font-semibold py-3 rounded-lg transition duration-200 shadow">
                     📖 Browse Menu
                 </a>
