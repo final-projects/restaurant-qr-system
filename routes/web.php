@@ -40,4 +40,8 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/menu', [PublicMenuController::class, 'index'])->name('menu.public.index');
 
+Route::get('/orders/menu/{table}', [PublicMenuController::class, 'menu'])->name('show.public.menu');
+
+Route::post('/orders/submit/{table}/{menu}', [PublicMenuController::class, 'submit'])->name('submit.public.menu');
+
 require __DIR__.'/auth.php';

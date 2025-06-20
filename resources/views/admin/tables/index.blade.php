@@ -20,7 +20,7 @@
         @forelse($tables as $table)
             <div class="flex flex-col items-center p-4 bg-white shadow rounded-lg transition hover:shadow-md border">
 
-                {{-- Table circle with border based on status --}}
+                {{-- Table circle --}}
                 <div class="relative w-24 h-24 rounded-full flex items-center justify-center bg-white border-4
                     {{ $table->status === 'available' ? 'border-green-500' : 'border-red-500' }}">
 
@@ -29,7 +29,7 @@
                         <path d="M3 5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v3h-2v11a1 1 0 1 1-2 0V8H8v11a1 1 0 1 1-2 0V8H4V5z"/>
                     </svg>
 
-                    {{-- Chairs around circle --}}
+                    {{-- Chairs --}}
                     @for($i = 0; $i < $table->seats; $i++)
                         @php
                             $angle = (360 / $table->seats) * $i;
@@ -42,18 +42,16 @@
                     @endfor
                 </div>
 
-                {{-- Table Number --}}
+                {{-- Table info --}}
                 <div class="mt-2 font-semibold text-gray-800 text-sm">Table #{{ $table->table_number }}</div>
-
-                {{-- Total Seats (text) --}}
                 <div class="mt-1 text-xs text-gray-500">Seats: {{ $table->seats }}</div>
 
                 {{-- QR Code --}}
                 <div class="mt-2">
-                    <img src="{{ route('admin.tables.qr', $table) }}"
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ route('show.public.menu', $table->id) }}"
                          alt="QR Code"
                          class="w-12 h-12 cursor-pointer transition hover:scale-110"
-                         onclick="showQRModal('{{ route('admin.tables.qr', $table) }}', '{{ $table->qr_token }}')">
+                         onclick="showQRModal('{{ route('show.public.menu', $table->id) }}')">
                 </div>
 
                 {{-- Status --}}
@@ -89,9 +87,9 @@
     </div>
 
     <script>
-        function showQRModal(imgSrc, qrToken) {
-            document.getElementById('qrImage').src = imgSrc;
-            document.getElementById('qrLink').value = imgSrc;
+        function showQRModal(link) {
+            document.getElementById('qrImage').src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(link);
+            document.getElementById('qrLink').value = link;
             document.getElementById('qrModal').classList.remove('hidden');
             document.getElementById('qrModal').classList.add('flex');
         }
