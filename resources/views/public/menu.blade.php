@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <title>Our Signature Menu</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{{ asset('logo.png') }}">
+
     <script src="https://cdn.tailwindcss.com"></script>
+
 
     <style>
         .menu-card:hover .menu-img {
