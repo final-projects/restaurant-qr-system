@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Our Signature Menu</title>
@@ -14,7 +13,6 @@
         }
     </style>
 </head>
-
 <body class="bg-gradient-to-tr from-white via-gray-50 to-white text-gray-800">
 
     <!-- Header -->
@@ -44,10 +42,10 @@
                 </ul>
             </div>
         @endif
+
         {{-- 🪑 Table Info --}}
         <div class="max-w-2xl mx-auto mb-10 bg-white rounded-xl shadow px-6 py-4 border border-gray-200">
-            <h3 class="text-lg font-bold text-indigo-700 mb-2">🪑 You are ordering for Table #{{ $table->table_number }}
-            </h3>
+            <h3 class="text-lg font-bold text-indigo-700 mb-2">🪑 You are ordering for Table #{{ $table->table_number }}</h3>
             <ul class="text-sm text-gray-600 space-y-1">
                 <li><strong>Table Number:</strong> {{ $table->table_number }}</li>
                 <li><strong>Total Seats:</strong> {{ $table->seats }}</li>
@@ -76,13 +74,20 @@
                     $existingQty = $activeOrder?->menus->firstWhere('id', $menu->id)?->pivot->quantity ?? 0;
                 @endphp
 
-                <div
-                    class="bg-white rounded-xl shadow-lg hover:shadow-2xl overflow-hidden menu-card group transition-all duration-300
-                {{ $selectedQty > 0 || $existingQty > 0 ? 'border-2 border-green-400 ring-1 ring-green-200' : '' }}">
+                <div class="relative bg-white rounded-xl shadow-lg hover:shadow-2xl overflow-hidden menu-card group transition-all duration-300
+                    {{ $existingQty > 0 ? 'border-2 border-green-500 ring-2 ring-green-200' : '' }}">
+
+                    {{-- ✅ Badge in top-left for selected --}}
+                    @if($existingQty > 0)
+                        <div class="absolute top-2 left-2 bg-green-600 text-white text-xs font-bold px-2 py-0.5 rounded shadow z-10">
+                            ✅ Selected ({{ $existingQty }})
+                        </div>
+                    @endif
 
                     @if ($menu->image)
-                        <img src="{{ asset('storage/' . $menu->image) }}" alt="{{ $menu->name }}"
-                            class="h-44 w-full object-cover menu-img">
+                        <img src="{{ asset('storage/' . $menu->image) }}"
+                             alt="{{ $menu->name }}"
+                             class="h-44 w-full object-cover menu-img">
                     @else
                         <div class="h-44 flex items-center justify-center bg-gray-100 text-gray-400">No Image</div>
                     @endif
@@ -91,20 +96,9 @@
                         <div class="flex justify-between items-start">
                             <h3 class="text-lg font-bold text-gray-800 truncate">
                                 {{ $menu->name }}
-                                @if ($selectedQty > 0)
-                                    <span class="text-green-600 text-xs font-semibold">✔ Selected</span>
-                                @endif
                             </h3>
-                            <span class="text-sm text-green-600 font-bold">{{ number_format($menu->price, 2) }}
-                                EGP</span>
+                            <span class="text-sm text-green-600 font-bold">{{ number_format($menu->price, 2) }} EGP</span>
                         </div>
-
-                        {{-- ✅ Show existing quantity in order if any --}}
-                        @if ($existingQty > 0)
-                            <div class="text-xs text-green-700 bg-green-100 px-2 py-0.5 rounded w-fit">
-                                🛒 In Order: {{ $existingQty }}
-                            </div>
-                        @endif
 
                         <div class="flex justify-between items-center">
                             <p class="text-xs text-gray-500">
@@ -112,32 +106,29 @@
                             </p>
 
                             @if ($menu->available)
-                                <span
-                                    class="text-xs font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">Available</span>
+                                <span class="text-xs font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">Available</span>
                             @else
-                                <span
-                                    class="text-xs font-semibold text-red-700 bg-red-100 px-2 py-0.5 rounded-full">Unavailable</span>
+                                <span class="text-xs font-semibold text-red-700 bg-red-100 px-2 py-0.5 rounded-full">Unavailable</span>
                             @endif
                         </div>
 
                         {{-- ✅ Add to Order Form --}}
                         <form action="{{ route('submit.public.menu', ['table' => $table->id, 'menu' => $menu->id]) }}"
-                            method="POST" class="mt-3 space-y-2">
+                              method="POST" class="mt-3 space-y-2">
                             @csrf
                             <label for="qty_{{ $menu->id }}" class="block text-xs text-gray-600">Quantity</label>
                             <input type="number" min="1" name="quantity" id="qty_{{ $menu->id }}"
-                                class="w-full border rounded px-2 py-1 text-sm"
-                                value="{{ old("quantity_{$menu->id}", 1) }}">
+                                   class="w-full border rounded px-2 py-1 text-sm"
+                                   value="{{ old("quantity_{$menu->id}", 1) }}">
 
                             <button type="submit"
-                                class="w-full bg-indigo-600 text-white text-sm py-1.5 rounded hover:bg-indigo-700 transition">
+                                    class="w-full bg-indigo-600 text-white text-sm py-1.5 rounded hover:bg-indigo-700 transition">
                                 ➕ Add to Order
                             </button>
                         </form>
                     </div>
                 </div>
             @endforeach
-
         </div>
 
         @if ($menus->isEmpty())
@@ -151,5 +142,4 @@
     </footer>
 
 </body>
-
 </html>

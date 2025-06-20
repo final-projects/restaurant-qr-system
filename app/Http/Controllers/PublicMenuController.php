@@ -15,39 +15,45 @@ class PublicMenuController extends Controller
 
         return view('menu.public', compact('menus'));
     }
+   /**
+     * Show available menu items and active order for this table.
+     */
     public function menu(Table $table)
     {
+        // ✅ Load all available menus with category info
         $menus = Menu::with('category')->where('available', true)->get();
 
-        // ✅ Get the latest active order for the table excluding 'old'
+        // ✅ Get the latest active order for this table (excluding 'old')
+
+        // dd($table ->load('orders.menus'));
         $activeOrder = $table->orders()
             ->where('status', '!=', 'old')
             ->latest()
-            ->with('menus') // لو عندك علاقة order->items->menu
+            ->with('menus') // load menus with pivot
             ->first();
+        // dd($activeOrder);
         return view('public.menu', compact('table', 'menus', 'activeOrder'));
     }
 
-
-
-
+    /**
+     * Handle submission of menu item to current table's order.
+     */
     public function submit(Request $request, Table $table, Menu $menu)
     {
         $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
 
-        // Create or get open order for this table
+        // ✅ Get or create a current 'preparing' order for this table
         $order = Order::firstOrCreate(
-            ['table_id' => $table->id, 'status' => 'preparing'], // Adjust status if needed
+            ['table_id' => $table->id, 'status' => 'preparing'],
             ['total_price' => 0]
         );
 
-        // Attach menu item with quantity (or update if exists)
+        // ✅ If menu already exists in order, increase quantity
         $existing = $order->menus()->where('menu_id', $menu->id)->first();
 
         if ($existing) {
-            // If already added, update the pivot quantity
             $order->menus()->updateExistingPivot($menu->id, [
                 'quantity' => $existing->pivot->quantity + $request->quantity,
             ]);
@@ -57,11 +63,8 @@ class PublicMenuController extends Controller
             ]);
         }
 
-        // Optionally recalculate total price
-        $total = 0;
-        foreach ($order->menus as $m) {
-            $total += $m->price * $m->pivot->quantity;
-        }
+        // ✅ Recalculate total price
+        $total = $order->menus->sum(fn($m) => $m->price * $m->pivot->quantity);
         $order->update(['total_price' => $total]);
 
         return back()->with('success', "{$menu->name} added to order with quantity {$request->quantity}.");
